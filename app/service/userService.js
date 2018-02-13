@@ -4,6 +4,7 @@ const _ = require('lodash')
 const uuidv1 = require('uuid/v1')
 const { salt } = require('../common/property')
 const { USERNAME, EMAIL } = require('../common/type')
+const { ROLE_ADMAIN } = require('../common/role')
 
 const TOKEN = 'token_'
 
@@ -52,7 +53,7 @@ class UserService extends Service {
 
     // 检查密码是否正确
     const user = await this.UserModel.findOne({
-        attributes: ['id', 'username', 'email', 'phone'],
+        attributes: ['id', 'username', 'email', 'phone', 'role'],
         where: {
           username,
           password: md5(password + salt)
@@ -208,6 +209,16 @@ class UserService extends Service {
     })
     if (!user) return this.ServerResponse.createByErrorMsg('找不到当前用户')
     return this.ServerResponse.createBySuccessData(user.toJSON())
+  }
+
+  /**
+   * @featrue 后台管理校验管理员
+   * @param user {Object}
+   * @returns {Promise.<ServerResponse>}
+   */
+  async checkAdminRole(user) {
+    if (user && user.role === ROLE_ADMAIN) return this.ServerResponse.createBySuccess()
+    else return this.ServerResponse.createByError()
   }
 }
 
