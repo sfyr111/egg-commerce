@@ -1,3 +1,5 @@
+const { ROLE_CUSTOMER } = require('../common/role')
+
 module.exports = app => {
   const { INTEGER, STRING, DATE } = app.Sequelize
 
@@ -36,7 +38,7 @@ module.exports = app => {
     role: {
       type: INTEGER(4),
       allowNull: false,
-      defaultValue: 0
+      defaultValue: ROLE_CUSTOMER
     },
     createTime: {
       type: DATE,
@@ -52,6 +54,16 @@ module.exports = app => {
     timestamps: false,
     tablseName: 'user'
   })
+
+  UserModel.beforeBulkUpdate((user) => {
+    user.attributes.updateTime = new Date()
+    return user
+  })
+
+  // UserModel.beforeCreate((user) => {
+  //   console.log(user)
+  //   return user
+  // })
 
   return UserModel
 }

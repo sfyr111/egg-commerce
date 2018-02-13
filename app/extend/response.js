@@ -1,5 +1,7 @@
-const serverResponse = require('../common/serverResponse')
+const ServerResponse = require('../common/serverResponse')
+const ResponseCode = require('../common/responseCode')
 
 module.exports = {
-  serverResponse
+  ResponseCode,
+  ServerResponse
 }
