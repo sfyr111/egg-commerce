@@ -7,4 +7,5 @@ module.exports = app => {
   const { router, controller } = app;
   router.get('/', controller.home.index);
   require('./router/portal/userRouter')(app)
+  require('./router/backend/userManageRouter')(app)
 };

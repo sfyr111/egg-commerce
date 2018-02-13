@@ -52,7 +52,7 @@ class UserService extends Service {
 
     // 检查密码是否正确
     const user = await this.UserModel.findOne({
-        attributes: ['id', 'username', 'email', 'phone', 'role'],
+        attributes: ['id', 'username', 'email', 'phone'],
         where: {
           username,
           password: md5(password + salt)
@@ -80,7 +80,7 @@ class UserService extends Service {
     try {
       user.password = md5(user.password + salt)
       user = await this.UserModel.create(user, {
-        attributes: { exclude: ['password'] }
+        attributes: { exclude: ['password', 'role', 'answer'] }
       })
       if (!user) return this.ServerResponse.createByErrorMsg('注册失败')
       else {
@@ -190,7 +190,7 @@ class UserService extends Service {
       individualHooks: true
     })
     const user = _.pickBy(updateRow.toJSON(), (value, key) => {
-      return ['id', 'username', 'email', 'phone', 'role'].find(item => key === item)
+      return ['id', 'username', 'email', 'phone'].find(item => key === item)
     })
     if (updateCount > 0) return this.ServerResponse.createBySuccessMsgAndData('更新个人信息成功', user)
     return this.ServerResponse.createByError('更新个人信息失败')
@@ -203,10 +203,9 @@ class UserService extends Service {
    */
   async getUserInfo(userId) {
     const user = await this.UserModel.findOne({
-      attributes: ['id', 'username', 'email', 'phone', 'role', 'question'],
+      attributes: ['id', 'username', 'email', 'phone', 'question'],
       where: { id: userId }
     })
-    console.log(this.ServerResponse.createBySuccessData(user.toJSON()))
     if (!user) return this.ServerResponse.createByErrorMsg('找不到当前用户')
     return this.ServerResponse.createBySuccessData(user.toJSON())
   }
