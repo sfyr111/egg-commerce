@@ -42,6 +42,12 @@ module.exports = app => {
   }, {
     timestamps: false,
     tablseName: 'category'
+  }, {
+    classMethods: {
+      associate() {
+        CategoryModel.hasOne(app.model.ProductModel)
+      }
+    }
   })
 
   CategoryModel.beforeBulkUpdate((category) => {

@@ -11,7 +11,9 @@ const TOKEN = 'token_'
 class UserService extends Service {
   constructor(ctx) {
     super(ctx)
+    this.session = ctx.session
     this.UserModel = ctx.model.UserModel
+    this.ResponseCode = ctx.response.ResponseCode
     this.ServerResponse = ctx.response.ServerResponse
   }
   /**
@@ -219,6 +221,18 @@ class UserService extends Service {
   async checkAdminRole(user) {
     if (user && user.role === ROLE_ADMAIN) return this.ServerResponse.createBySuccess()
     else return this.ServerResponse.createByError()
+  }
+
+  /**
+   * @featrue 检查是否登录、是否为管理员
+   * @returns {Promise.<*>}
+   */
+  async checkAdminAndLogin() {
+    const user = this.session.currentUser
+    if (!user) return this.ServerResponse.createByErrorCodeMsg(this.ResponseCode.NEED_LOGIN, '用户未登录, 请登录')
+    const response = await this.checkAdminRole(user)
+    if (!response.isSuccess()) return this.ServerResponse.createByErrorMsg('无权限操作, 需要管理员权限')
+    return this.ServerResponse.createBySuccess()
   }
 }
 

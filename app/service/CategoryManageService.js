@@ -16,9 +16,10 @@ class CategoryManageService extends Service {
    */
   async addCategory(name, parentId = 0) {
     if (!name.trim()) return this.ServerResponse.createByErrorMsg('添加品类参数错误')
-    const category = await this.CategoryModel.create({ name, parentId })
-    if (!category) return this.ServerResponse.createByErrorMsg('添加品类失败')
-    return this.ServerResponse.createBySuccessMsg('添加品类成功')
+    const categoryRow = await this.CategoryModel.create({ name, parentId })
+    if (!categoryRow) return this.ServerResponse.createByErrorMsg('添加品类失败')
+    const category = categoryRow.toJSON()
+    return this.ServerResponse.createBySuccessMsgAndData('添加品类成功', category)
   }
 
   /**
