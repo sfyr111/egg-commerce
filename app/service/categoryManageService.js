@@ -34,6 +34,53 @@ class CategoryManageService extends Service {
     const category = updateRow.toJSON()
     return this.ServerResponse.createBySuccessMsgAndData('更新品类名称成功', category)
   }
+
+  /**
+   * @feature 获取某分类下的平级子分类
+   * @param parentId
+   * @returns {Promise.<*>}
+   */
+  async getChildParallelCagtegory(parentId = 0) {
+    const cagtegoryRows = await this.CategoryModel.findAll({
+      attributes: ['id', 'parentId', 'name', 'status'],
+      where: { parentId }
+    }).then(rows => rows && rows.map(r => r.toJSON()))
+    if (cagtegoryRows.length < 1) {
+      // return this.ServerResponse.createByErrorMsg('未找到当前分类的子分类')
+      this.ctx.logger.info('getChildParallelCagtegory: 未找到当前分类的子分类')
+    }
+    return this.ServerResponse.createBySuccessData(cagtegoryRows)
+  }
+
+  /**
+   * @feature 递归查询本节点的id及孩子父节点的id
+   * @param {Number} categoryId
+   */
+  async getCategoryAndDeepChildCategory(categoryId = 0) {
+    const categoryIdSet = new Set()
+    const categoryList = await this._findChildCategory(categoryId)
+    const categoryUniqList = _.uniqWith(categoryList, _.isEqual)
+    await categoryUniqList.forEach(item => categoryIdSet.add(item.id))
+    return this.ServerResponse.createBySuccessData(Array.from(categoryIdSet))
+  }
+
+  async _findChildCategory(categoryId, arr = []) {
+    const category = await this.CategoryModel.findOne({
+      attributes: ['id', 'parentId', 'name', 'status'],
+      where: { id: categoryId }
+    }).then(row => row && row.toJSON())
+    if (category) arr.push(category)
+    const categoryList = await this.CategoryModel.findAll({
+      attributes: ['id', 'parentId', 'name', 'status'],
+      where: { parentId: categoryId }
+    })
+    if (categoryList.length < 1) return arr
+    let i = 0
+    while (i < categoryList.length) {
+      await this._findChildCategory(categoryList[i++].get('id'), arr)
+    }
+    return arr
+  }
 }
 
 module.exports = CategoryManageService
