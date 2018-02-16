@@ -70,6 +70,10 @@ module.exports = app => {
     timestamps: false,
     tablseName: 'product'
   }, {
+    indexes: [
+      { fields: ['categoryId'] }
+    ]
+  }, {
     classMethods: {
       associate() {
         ProductModel.belongsTo(app.model.CategoryModel)

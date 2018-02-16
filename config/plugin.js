@@ -17,3 +17,8 @@ exports.sessionRedis = {
   enable: true,
   package: 'egg-session-redis',
 };
+
+exports.oss = {
+  enable: true,
+  package: 'egg-oss'
+}

@@ -45,7 +45,7 @@ module.exports = app => {
   }, {
     classMethods: {
       associate() {
-        CategoryModel.hasOne(app.model.ProductModel)
+        CategoryModel.hasOne(app.model.ProductModel, { as: 'categoryId' })
       }
     }
   })

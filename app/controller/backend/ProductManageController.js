@@ -1,4 +1,7 @@
 const Controller = require('egg').Controller;
+const path = require('path')
+const fs = require('fs')
+const sendToWormhole = require('stream-wormhole')
 const _ = require('lodash')
 
 class ProductManageController extends Controller {
@@ -34,6 +37,75 @@ class ProductManageController extends Controller {
     }
     this.ctx.body = response
   }
+
+  // 获取产品详情
+  async getDetail() {
+    const { id } = this.ctx.params
+    let response = await this.UserService.checkAdminAndLogin()
+    if (response.isSuccess()) {
+      // TODO 验证通过 添加逻辑
+      response = await this.ProductManageService.getDetail(id)
+    }
+    this.ctx.body = response
+  }
+  // 获取产品列表
+  async getProductList() {
+    let response = await this.UserService.checkAdminAndLogin()
+    if (response.isSuccess()) {
+      // TODO 验证通过 添加逻辑
+      response = await this.ProductManageService.getProductList(this.resquest.query)
+    }
+    this.ctx.body = response
+  }
+
+  // 后台产品搜索
+  async productSearch() {
+    let response = await this.UserService.checkAdminAndLogin()
+    if (response.isSuccess()) {
+      // TODO 验证通过 添加逻辑
+      response = await this.ProductManageService.productSearch(this.resquest.query)
+    }
+    this.ctx.body = response
+  }
+
+  // 上传图片
+  async upload() {
+    let response = await this.UserService.checkAdminAndLogin()
+    if (response.isSuccess()) {
+      // TODO 验证通过 添加逻辑
+      const stream = await this.ctx.getFileStream()
+      const extname = path.extname(stream.filename)
+      const name = path.basename(stream.filename, extname)
+      const filename = name + Date.now() + extname
+      let result
+      try {
+        // 本地上传
+        const ws = fs.createWriteStream(path.resolve('app/public/' + filename))
+        stream.pipe(ws)
+        // oss 服务
+        // result = await this.ctx.oss.put(name + now, stream)
+      } catch (e) {
+        await sendToWormhole(stream)
+        throw new Error(e)
+        response = this.ServerResponse.createByError('上传图片失败')
+      } finally { await sendToWormhole(stream) }
+      response = this.ServerResponse.createBySuccessMsgAndData('上传图片成功', {
+        filename,
+        url: result ? result.url : 'localhost:7001/public/' + filename,
+        fields: stream.fields
+      })
+    }
+    this.ctx.body = response
+  }
+
+  // 富文本图片上传，对返回值有特别要求 simditor
+  // async richUpload() {
+  //   this.ctx.body = {
+  //     success: true / false,
+  //     msg: 'error message',
+  //     file_path: '[real file path]'
+  //   }
+  // }
 }
 
 

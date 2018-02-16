@@ -42,5 +42,22 @@ module.exports = appInfo => {
     },
   };
 
+  config.oss = {
+    client: {
+      accessKeyId: 'LTAItynAEvcPJHkE',
+      accessKeySecret: '5cZb18s6ZeBxY6K9duVavWL6Aup7T5',
+      bucket: 'egg-commerce',
+      endpoint: 'oss-cn-hangzhou.aliyuncs.com',
+      timeout: '60s',
+    }
+  }
+
+  config.multipart = {
+    // fileSize: '50mb', // default 10M
+    // whitelist: [
+    //   '.png'
+    // ]
+  };
+
   return config;
 };
