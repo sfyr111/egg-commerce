@@ -121,7 +121,7 @@ class ProductManageService extends Service {
         limit: Number(pageSize | 0),
         offset: Number(pageNum - 1 | 0) * Number(pageSize | 0)
       })
-      if (rows.length < 1) this.ServerResponse.createBySuccessMsg('已无产品数据')
+      if (rows.length < 1) this.ServerResponse.createBySuccessMsg('无产品数据')
       rows.forEach(row => row && row.toJSON())
       return this.ServerResponse.createBySuccessData({
         pageNum,
