@@ -54,7 +54,7 @@ module.exports = app => {
     status: {
       type: INTEGER(6),
       allowNull: true,
-      defaultValue: ON_SALE.code
+      defaultValue: ON_SALE.CODE
     },
     createTime: {
       type: DATE,
@@ -76,7 +76,7 @@ module.exports = app => {
   }, {
     classMethods: {
       associate() {
-        ProductModel.belongsTo(app.model.CategoryModel)
+        ProductModel.hasOne(app.model.CartModel, { foreignKey: 'id' })
       }
     }
   })

@@ -25,7 +25,7 @@ class UserController extends Controller {
 
   // 登出
   async logout() {
-    this.session = null
+    this.ctx.session = null
     this.ctx.body = this.ServerResponse.createBySuccess()
   }
 

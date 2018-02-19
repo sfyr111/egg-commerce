@@ -44,9 +44,7 @@ module.exports = app => {
     tablseName: 'category'
   }, {
     classMethods: {
-      associate() {
-        CategoryModel.hasOne(app.model.ProductModel, { as: 'categoryId' })
-      }
+      associate() {}
     }
   })
 

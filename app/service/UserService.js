@@ -214,6 +214,7 @@ class UserService extends Service {
   }
 
   /**
+   * @Reconstruction 中间件
    * @featrue 后台管理校验管理员
    * @param user {Object}
    * @returns {Promise.<ServerResponse>}
@@ -224,6 +225,7 @@ class UserService extends Service {
   }
 
   /**
+   * @Reconstruction 中间件
    * @featrue 检查是否登录、是否为管理员
    * @returns {Promise.<*>}
    */

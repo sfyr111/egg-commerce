@@ -20,7 +20,7 @@ class ProductService extends Service {
     if (!id) return this.ServerResponse.createByErrorCodeMsg(this.ResponseCode.ILLEGAL_ARGUMENT, 'ILLEGAL_ARGUMENT')
     const productRow = await this.ProductModel.findOne({ where: { id } })
     if (!productRow) return this.ServerResponse.createByErrorMsg('不存在或已删除')
-    if (productRow.get('status') !== ON_SALE.code) return this.ServerResponse.createByErrorMsg('产品已下架')
+    if (productRow.get('status') !== ON_SALE.CODE) return this.ServerResponse.createByErrorMsg('产品已下架')
     return this.ServerResponse.createBySuccessData(productRow.toJSON())
   }
 
@@ -34,7 +34,7 @@ class ProductService extends Service {
   async productSearch({ productName, pageNum = 1, pageSize = 10, sortBy = 'asc' }) {
     const { count, rows } = await this.ProductModel.findAndCount({
       // attributes: { exclude: ['createTime', 'updateTime'] },
-      where: { name: { '$like': `%${productName}%` }, status: ON_SALE.code },
+      where: { name: { '$like': `%${productName}%` }, status: ON_SALE.CODE },
       order: [['price', sortBy]],
       limit: Number(pageSize | 0),
       offset: Number(pageNum - 1 | 0) * Number(pageSize | 0)
@@ -66,7 +66,7 @@ class ProductService extends Service {
     }
     const { data: categoryIdArr } = await this.ctx.service.categoryManageService.getCategoryAndDeepChildCategory(categoryId)
     const { count, rows } = await this.ProductModel.findAndCount({
-      where: { categoryId: { '$in': categoryIdArr }, status: ON_SALE.code },
+      where: { categoryId: { '$in': categoryIdArr }, status: ON_SALE.CODE },
       order: [['price', sortBy]],
       limit: Number(pageSize | 0),
       offset: Number(pageNum - 1 | 0) * Number(pageSize | 0)
