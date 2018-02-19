@@ -74,7 +74,7 @@ module.exports = app => class CartService extends Service {
   async getCartListByUserId(msg, userId = this.session.currentUser.id) {
     const cartArr = await this.CartModel.findAll({
       where: { userId },
-      include: [{ model: this.ProductModel }]
+      include: [{ model: this.ProductModel, where: { id: app.Sequelize.col('productId') } }]
     }).map(r => r && r.toJSON())
     const totalPrice = cartArr.reduce((prePrice, curItem) => {
       return curItem.checked ? Number(Number(prePrice) + Number(curItem.quantity) * Number(curItem.product.price)).toFixed(2) : 0
