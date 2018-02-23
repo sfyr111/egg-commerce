@@ -5,7 +5,7 @@ module.exports = app => class ShippingController extends Controller {
   constructor(ctx) {
     super(ctx)
     this.session = ctx.session
-    this.resquest = ctx.request
+    this.request = ctx.request
     this.UserService = ctx.service.userService
     this.ResponseCode = ctx.response.ResponseCode
     this.ProductService = ctx.service.productService
@@ -14,13 +14,13 @@ module.exports = app => class ShippingController extends Controller {
   }
 
   async add() {
-    const response = await this.ShippingService.add(this.resquest.body)
+    const response = await this.ShippingService.add(this.request.body)
     this.ctx.body = response
   }
 
   async update() {
     const { id } = this.ctx.params
-    const response = await this.ShippingService.update(this.resquest.body, id)
+    const response = await this.ShippingService.update(this.request.body, id)
     this.ctx.body = response
   }
 

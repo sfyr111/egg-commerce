@@ -45,7 +45,7 @@ module.exports = app => class CartService extends Service {
       const stock = productRow.get('stock')
       const quantity = cartRow.get('quantity')
       count = quantity + count > stock ? stock : quantity + count
-      await cartRow.update({ quantity: count < 0 ? 0 : count })
+      await cartRow.update({ quantity: count < 0 ? 0 : count }, { individualHooks: true })
       msg = '更新'
     }
     return await this.getCartListByUserId(`${msg}购物车成功`, userId)

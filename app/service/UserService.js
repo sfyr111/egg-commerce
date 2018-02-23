@@ -4,7 +4,7 @@ const _ = require('lodash')
 const uuidv1 = require('uuid/v1')
 const { salt } = require('../common/property')
 const { USERNAME, EMAIL } = require('../common/type')
-const { ROLE_ADMAIN } = require('../common/role')
+const { ROLE_ADMAIN, ROLE_CUSTOMER } = require('../common/role')
 
 const TOKEN = 'token_'
 
@@ -68,7 +68,7 @@ class UserService extends Service {
   }
 
   /**
-   *
+   * @feature 注册, 只能注册为ROLE_CUSTOMER, ROLE_ADMAIN 需要管理员授权
    * @param user {Object} { username, password, ... }
    * @returns {Promise.<void>}
    */
@@ -81,6 +81,7 @@ class UserService extends Service {
     if (!validEmailResponse.isSuccess()) return validEmailResponse
 
     try {
+      user.role = ROLE_CUSTOMER
       user.password = md5(user.password + salt)
       user = await this.UserModel.create(user, {
         attributes: { exclude: ['password', 'role', 'answer'] }
