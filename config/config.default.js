@@ -16,25 +16,25 @@ module.exports = appInfo => {
     port: '3306',
     username: 'root',
     password: '1234abcd',
-    timezone: '+08:00' //东八时区
+    timezone: '+08:00', // 东八时区
   };
 
   config.redis = {
     client: {
-      port: 6379,          // Redis port
-      host: '127.0.0.1',   // Redis host
+      port: 6379, // Redis port
+      host: '127.0.0.1', // Redis host
       password: '',
       db: 0,
     },
-    agent:true
-  }
+    agent: true,
+  };
 
   config.sessionRedis = {
     key: 'EGG_SESSION',
     maxAge: 24 * 3600 * 1000,
     httpOnly: true,
-    encrypt: false
-  }
+    encrypt: false,
+  };
 
   config.security = {
     csrf: {
@@ -49,8 +49,8 @@ module.exports = appInfo => {
       bucket: 'egg-commerce',
       endpoint: 'oss-cn-hangzhou.aliyuncs.com',
       timeout: '60s',
-    }
-  }
+    },
+  };
 
   config.multipart = {
     // fileSize: '50mb', // default 10M

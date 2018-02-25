@@ -1,3 +1,3 @@
 module.exports = {
-  salt: 'egg-commerce'
-}
+  salt: 'egg-commerce',
+};

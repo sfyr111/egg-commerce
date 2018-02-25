@@ -20,4 +20,4 @@ module.exports = app => {
   app.router.put('/user/updateUserInfo', app.controller.portal.userController.updateUserInfo);
 
   app.router.get('/user/getUserInfo', app.controller.portal.userController.getUserInfo);
-}
+};

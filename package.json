@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "alipay-ftof": "^0.1.5",
+    "alipay-mobile": "^2.2.1",
     "egg": "^2.2.1",
     "egg-multipart": "^2.0.0",
     "egg-oss": "^1.1.0",

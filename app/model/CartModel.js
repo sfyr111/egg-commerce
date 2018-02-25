@@ -1,19 +1,19 @@
-const { UN_CHECKED } = require('../common/cart')
+const { UN_CHECKED } = require('../common/cart');
 
 module.exports = app => {
-  const { INTEGER, DATE } = app.Sequelize
+  const { INTEGER, DATE } = app.Sequelize;
 
   const CartModel = app.model.define('cart', {
     id: {
       type: INTEGER(11),
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
     // 用户id
     userId: {
       type: INTEGER(11),
-      allowNull: false
+      allowNull: false,
     },
     // 产品id
     productId: {
@@ -29,37 +29,37 @@ module.exports = app => {
     checked: {
       type: INTEGER(11),
       allowNull: true,
-      defaultValue: UN_CHECKED
+      defaultValue: UN_CHECKED,
     },
     createTime: {
       type: DATE,
       allowNull: false,
-      defaultValue: new Date()
+      defaultValue: new Date(),
     },
     updateTime: {
       type: DATE,
       allowNull: false,
-      defaultValue: new Date()
-    }
+      defaultValue: new Date(),
+    },
   }, {
     timestamps: false,
-    tablseName: 'cart'
+    tablseName: 'cart',
   }, {
     indexes: [
-      { fields: ['userId'] }
-    ]
+      { fields: [ 'userId' ] },
+    ],
   }, {
     classMethods: {
       associate() {
-        CartModel.belongsTo(app.model.ProductModel, { foreignKey: 'productId' })
-      }
-    }
-  })
+        CartModel.belongsTo(app.model.ProductModel, { foreignKey: 'productId' });
+      },
+    },
+  });
   // ProductModel.belongsTo(app.model.categoryModel)
-  CartModel.beforeBulkUpdate((cart) => {
-    cart.attributes.updateTime = new Date()
-    return cart
-  })
+  CartModel.beforeBulkUpdate(cart => {
+    cart.attributes.updateTime = new Date();
+    return cart;
+  });
 
-  return CartModel
-}
+  return CartModel;
+};

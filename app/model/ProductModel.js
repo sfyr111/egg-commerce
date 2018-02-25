@@ -1,90 +1,90 @@
-const { ON_SALE } = require('../common/product')
+const { ON_SALE } = require('../common/product');
 
 module.exports = app => {
-  const { INTEGER, STRING, DATE, TEXT, DECIMAL } = app.Sequelize
+  const { INTEGER, STRING, DATE, TEXT, DECIMAL } = app.Sequelize;
 
   const ProductModel = app.model.define('product', {
     id: {
       type: INTEGER(11),
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
     // 分类id
     categoryId: {
       type: INTEGER(11),
-      allowNull: false
+      allowNull: false,
     },
     // 商品名称
     name: {
       type: STRING(50),
-      allowNull: false
+      allowNull: false,
     },
     // 商品副标题
     subtitle: {
       type: STRING(200),
-      allowNull: true
+      allowNull: true,
     },
     // 产品主图，url相对地址
     mainImage: {
       type: STRING(500),
-      allowNull: true
+      allowNull: true,
     },
     // 图片地址，json格式，扩展用
     subImages: {
       type: TEXT,
-      allowNull: true
+      allowNull: true,
     },
     // 商品详情
     detail: {
       type: TEXT,
-      allowNull: true
+      allowNull: true,
     },
     // 价格，保留两位小数
     price: {
       type: DECIMAL(20, 2),
-      allowNull: false
+      allowNull: false,
     },
     // 库存
     stock: {
       type: INTEGER(11),
-      allowNull: false
+      allowNull: false,
     },
     // 商品状态 1-在售，2-下架，3-删除
     status: {
       type: INTEGER(6),
       allowNull: true,
-      defaultValue: ON_SALE.CODE
+      defaultValue: ON_SALE.CODE,
     },
     createTime: {
       type: DATE,
       allowNull: false,
-      defaultValue: new Date()
+      defaultValue: new Date(),
     },
     updateTime: {
       type: DATE,
       allowNull: false,
-      defaultValue: new Date()
-    }
+      defaultValue: new Date(),
+    },
   }, {
     timestamps: false,
-    tablseName: 'product'
+    tablseName: 'product',
   }, {
     indexes: [
-      { fields: ['categoryId'] }
-    ]
+      { fields: [ 'categoryId' ] },
+    ],
   }, {
     classMethods: {
       associate() {
-        ProductModel.hasOne(app.model.CartModel, { foreignKey: 'id' })
-      }
-    }
-  })
+        ProductModel.hasOne(app.model.CartModel, { foreignKey: 'id' });
+      },
+    },
+  });
   // ProductModel.belongsTo(app.model.categoryModel)
-  ProductModel.beforeBulkUpdate((product) => {
-    product.attributes.updateTime = new Date()
-    return product
-  })
+  ProductModel.beforeBulkUpdate(product => {
+    product.attributes.updateTime = new Date();
+    return product;
+  });
 
-  return ProductModel
-}
+  return ProductModel;
+};

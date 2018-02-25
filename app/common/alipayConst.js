@@ -10,5 +10,5 @@ module.exports = {
   // success
   RESPONSE_SUCCESS: 'success',
   // failed
-  RESPONSE_FAILED: 'failed'
-}
+  RESPONSE_FAILED: 'failed',
+};

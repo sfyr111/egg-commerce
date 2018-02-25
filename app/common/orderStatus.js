@@ -5,4 +5,4 @@ module.exports = {
   SHIPPED: { CODE: 40, VALUE: '已发货' },
   ORDER_SUCCESS: { CODE: 50, VALUE: '订单已完成' },
   ORDER_CLOSE: { CODE: 60, VALUE: '订单关闭' },
-}
+};

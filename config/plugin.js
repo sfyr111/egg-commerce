@@ -5,13 +5,13 @@
 
 exports.sequelize = {
   enable: true,
-  package: 'egg-sequelize'
-}
+  package: 'egg-sequelize',
+};
 
 exports.redis = {
   enable: true,
-  package: 'egg-redis'
-}
+  package: 'egg-redis',
+};
 
 exports.sessionRedis = {
   enable: true,
@@ -20,5 +20,5 @@ exports.sessionRedis = {
 
 exports.oss = {
   enable: true,
-  package: 'egg-oss'
-}
+  package: 'egg-oss',
+};

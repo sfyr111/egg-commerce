@@ -1,69 +1,69 @@
-const { ROLE_CUSTOMER } = require('../common/role')
+const { ROLE_CUSTOMER } = require('../common/role');
 
 module.exports = app => {
-  const { INTEGER, STRING, DATE } = app.Sequelize
+  const { INTEGER, STRING, DATE } = app.Sequelize;
 
   const UserModel = app.model.define('user', {
     id: {
       type: INTEGER(11),
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
     username: {
       type: STRING(50),
       allowNull: false,
-      unique: true
+      unique: true,
     },
     password: {
       type: STRING(50),
-      allowNull: false
+      allowNull: false,
     },
     email: {
       type: STRING(50),
-      allowNull: true
+      allowNull: true,
     },
     phone: {
       type: STRING(20),
-      allowNull: true
+      allowNull: true,
     },
     question: {
       type: STRING(100),
-      allowNull: true
+      allowNull: true,
     },
     answer: {
       type: STRING(100),
-      allowNull: true
+      allowNull: true,
     },
     role: {
       type: INTEGER(4),
       allowNull: false,
-      defaultValue: ROLE_CUSTOMER
+      defaultValue: ROLE_CUSTOMER,
     },
     createTime: {
       type: DATE,
       allowNull: false,
-      defaultValue: new Date()
+      defaultValue: new Date(),
     },
     updateTime: {
       type: DATE,
       allowNull: false,
-      defaultValue: new Date()
-    }
+      defaultValue: new Date(),
+    },
   }, {
     timestamps: false,
-    tablseName: 'user'
-  })
+    tablseName: 'user',
+  });
 
-  UserModel.beforeBulkUpdate((user) => {
-    user.attributes.updateTime = new Date()
-    return user
-  })
+  UserModel.beforeBulkUpdate(user => {
+    user.attributes.updateTime = new Date();
+    return user;
+  });
 
   // UserModel.beforeCreate((user) => {
   //   console.log(user)
   //   return user
   // })
 
-  return UserModel
-}
+  return UserModel;
+};

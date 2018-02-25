@@ -1,4 +1,4 @@
 module.exports = {
   USERNAME: 'username',
-  EMAIL: 'email'
+  EMAIL: 'email',
 };
