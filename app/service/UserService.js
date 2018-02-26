@@ -36,7 +36,7 @@ class UserService extends Service {
    * @param type {String}
    * @return ServerResponse.msg
    */
-  async _checkValid(type, value) {
+  async checkValid(type, value) {
     if (type.trim()) {
       if (USERNAME === type) {
         return await this._checkExistColByField(USERNAME, value)
@@ -54,7 +54,7 @@ class UserService extends Service {
 
   async login(username, password) {
     // 用户名存在报错
-    const validResponse = await this._checkValid(USERNAME, username);
+    const validResponse = await this.checkValid(USERNAME, username);
     if (validResponse.isSuccess()) return validResponse;
 
     // 检查密码是否正确
@@ -78,10 +78,10 @@ class UserService extends Service {
    */
   async register(user) {
     // 用户名存在报错
-    const validUsernameResponse = await this._checkValid(USERNAME, user.username);
+    const validUsernameResponse = await this.checkValid(USERNAME, user.username);
     if (!validUsernameResponse.isSuccess()) return validUsernameResponse;
     // 邮箱存在报错
-    const validEmailResponse = await this._checkValid(EMAIL, user.email);
+    const validEmailResponse = await this.checkValid(EMAIL, user.email);
     if (!validEmailResponse.isSuccess()) return validEmailResponse;
 
     try {
@@ -103,7 +103,7 @@ class UserService extends Service {
   }
 
   async selectQuestion(username) {
-    const validResponse = await this._checkValid(USERNAME, username);
+    const validResponse = await this.checkValid(USERNAME, username);
     if (validResponse.isSuccess()) return this.ServerResponse.createByErrorMsg('用户不存在');
     const question = await this.UserModel.findOne({
       attributes: [ 'question' ],
@@ -115,7 +115,7 @@ class UserService extends Service {
 
   // 找回密码答案验证tokan
   async checkAnswer(username, question, answer) {
-    const user = this.UserModel.findOne({
+    const user = await this.UserModel.findOne({
       attributes: [ 'username', 'question', 'answer' ],
       where: { username, question, answer },
     });
@@ -139,7 +139,7 @@ class UserService extends Service {
   async forgetRestPassword(username, passwordNew, forgetToken) {
     if (!forgetToken) return this.ServerResponse.createByErrorMsg('参数错误，token必须传递');
     // 用户不存在
-    const validResponse = await this._checkValid(USERNAME, username);
+    const validResponse = await this.checkValid(USERNAME, username);
     if (validResponse.isSuccess()) return this.ServerResponse.createByErrorMsg('用户不存在');
     // token缓存
     const token = await this.app.redis.get(TOKEN + username);

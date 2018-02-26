@@ -104,7 +104,7 @@ module.exports = app => class CartService extends Service {
       where: { userId, productId },
       individualHooks: true,
     });
-    if (updateCount > 0) return await this.getCartListByUserId('全选', userId);
+    if (updateCount > 0) return await this.getCartListByUserId('', userId);
   }
 
   /**

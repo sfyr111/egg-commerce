@@ -1,39 +1,29 @@
 # egg-commerce
 
-yangran
+egg / mysql 开发电商平台
 
-## 快速入门
-
-<!-- 在此次添加使用文档 -->
-
-如需进一步了解，参见 [egg 文档][egg]。
+### 相关栈
+node / mysql / egg / redis / 支付宝支付  
 
 ### 本地开发
 
 ```bash
 $ npm i
 $ npm run dev
-$ open http://localhost:7001/
+$ open http://localhost:7071/
 ```
 
-### 部署
+### API 文档
+[用户模块](https://github.com/sfyr111/egg-commerce/wiki/%E7%94%A8%E6%88%B7%E6%A8%A1%E5%9D%97)
 
-```bash
-$ npm start
-$ npm stop
-```
+[前台商品展示及购物车](https://github.com/sfyr111/egg-commerce/wiki/%E5%89%8D%E5%8F%B0%E5%95%86%E5%93%81%E5%B1%95%E7%A4%BA%E5%8F%8A%E8%B4%AD%E7%89%A9%E8%BD%A6)
 
-### 单元测试
+[前台收货地址](https://github.com/sfyr111/egg-commerce/wiki/%E5%89%8D%E5%8F%B0%E6%94%B6%E8%B4%A7%E5%9C%B0%E5%9D%80)
 
-- [egg-bin] 内置了 [mocha], [thunk-mocha], [power-assert], [istanbul] 等框架，让你可以专注于写单元测试，无需理会配套工具。
-- 断言库非常推荐使用 [power-assert]。
-- 具体参见 [egg 文档 - 单元测试](https://eggjs.org/zh-cn/core/unittest)。
+[前台订单及支付](https://github.com/sfyr111/egg-commerce/wiki/%E5%89%8D%E5%8F%B0%E8%AE%A2%E5%8D%95%E5%8F%8A%E6%94%AF%E4%BB%98)
 
-### 内置指令
+[后台商品分类管理](https://github.com/sfyr111/egg-commerce/wiki/%E5%90%8E%E5%8F%B0%E5%95%86%E5%93%81%E5%88%86%E7%B1%BB%E7%AE%A1%E7%90%86)
 
-- 使用 `npm run lint` 来做代码风格检查。
-- 使用 `npm test` 来执行单元测试。
-- 使用 `npm run autod` 来自动检测依赖更新，详细参见 [autod](https://www.npmjs.com/package/autod) 。
+[后台商品管理](https://github.com/sfyr111/egg-commerce/wiki/%E5%90%8E%E5%8F%B0%E5%95%86%E5%93%81%E7%AE%A1%E7%90%86)
 
-
-[egg]: https://eggjs.org
+[后台管理订单](https://github.com/sfyr111/egg-commerce/wiki/%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E8%AE%A2%E5%8D%95)

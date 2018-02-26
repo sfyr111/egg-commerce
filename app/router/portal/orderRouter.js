@@ -10,7 +10,7 @@ module.exports = app => {
 
   app.router.post('/order/create', checkLogin, app.controller.portal.orderController.create);
 
-  app.router.post('/order/cancel', checkLogin, app.controller.portal.orderController.cancel);
+  app.router.put('/order/cancel', checkLogin, app.controller.portal.orderController.cancel);
 
   app.router.get('/order/getOrderCartProduct', checkLogin, app.controller.portal.orderController.getOrderCartProduct);
 
