@@ -1,9 +1,10 @@
 # egg-commerce
 
 egg / mysql 开发电商平台
+集成支付宝面对面支付、手机网站唤醒APP支付
 
 ### 相关栈
-node / mysql / egg / redis / 支付宝支付  
+node / mysql / egg / sequelizejs / redis / 支付宝支付  
 
 ### 本地开发
 
