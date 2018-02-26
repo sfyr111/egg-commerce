@@ -13,6 +13,7 @@ const AlipayConst = require('../common/alipayConst');
 
 const { CHECKED } = require('../common/cart');
 const { ON_SALE } = require('../common/product');
+const { ROLE_ADMAIN } = require('../common/role');
 const PAYMENT_TYPE_MAP = require('../common/paymentType');
 const ORDER_STATUS_MAP = require('../common/orderStatus');
 
@@ -34,7 +35,7 @@ module.exports = app => {
       this.ProductModel.hasOne(this.CartModel, { foreignKey: 'id' });
       this.CartModel.belongsTo(this.ProductModel, { foreignKey: 'productId' });
 
-      this.OrderItemModel.hasOne(this.OrderModel, { foreignKey: 'orderNum', targetKey: 'orderNum' })
+      this.OrderItemModel.hasMany(this.OrderModel, { foreignKey: 'orderNum', targetKey: 'orderNum' })
       this.OrderModel.belongsTo(this.OrderItemModel, { foreignKey: 'orderNum', targetKey: 'orderNum' })
 
       this.ShippingModel.hasOne(this.OrderModel, { foreignKey: 'id' })
@@ -119,6 +120,8 @@ module.exports = app => {
 
     async createOrder(shippingId) {
       const { id: userId } = this.session.currentUser
+      const shipping = await this.ShippingModel.findOne({ where: { id: shippingId, userId }}).then(r => r && r.toJSON())
+      if (!shipping) return this.ServerResponse.createByErrorMsg('用户无该收货地址')
       // 购物车中获取数据
       const response = await this._getCartListWithProduct(userId)
       if (!response.isSuccess()) return response
@@ -175,22 +178,45 @@ module.exports = app => {
     /**
      * @feature 获取订单详情
      * @param orderNum {number} 订单号
-     * @returns {Promise.<*>}
+     * @returns {Promise.<object>}
      */
     async getDetail(orderNum) {
-      const { id: userId } = this.session.currentUser
-      const order = await this.OrderModel.findOne({ where: { orderNum, userId }}).then(r => r && r.toJSON())
+      const { id: userId, role} = this.session.currentUser
+      const order = await this.OrderModel.findOne({ where: { orderNum, userId: role === ROLE_ADMAIN ? { $regexp: '[0-9a-zA-Z]' } : userId }}).then(r => r && r.toJSON())
       if (!order) return this.ServerResponse.createByErrorMsg('订单不存在')
-      const orderItem = await this.OrderItemModel.findAll({ where: { orderNum, userId }}).then(rows => rows && rows.map(r => r.toJSON()))
+      const orderItem = await this.OrderItemModel.findAll({ where: { orderNum, userId: role === ROLE_ADMAIN ? { $regexp: '[0-9a-zA-Z]' } : userId }}).then(rows => rows && rows.map(r => r.toJSON()))
       if (orderItem.length < 1) return this.ServerResponse.createByErrorMsg('订单不存在')
       const orderDetail = await this._createOrderDetail(order, orderItem, order.shippingId)
       return this.ServerResponse.createBySuccessMsgAndData('订单详情', orderDetail)
     }
 
+    async manageSendGood(orderNum) {
+      const orderRow = await this.OrderModel.findOne({ where: { orderNum }})
+      if (!orderRow) return this.ServerResponse.createByErrorMsg('订单不存在1')
+
+      const orderItem = await this.OrderItemModel.findAll({ where: { orderNum } }).then(rows => rows && rows.map(r => r.toJSON()))
+      if (orderItem.length < 1) return this.ServerResponse.createByErrorMsg('订单不存在2')
+
+      if (orderRow.get('status') !== ORDER_STATUS_MAP.PAID.CODE) return this.ServerResponse.createByErrorMsg('此订单未完成交易, 不能发货')
+      const updateRow = await orderRow.update({ status: ORDER_STATUS_MAP.SHIPPED.CODE }, { individualHooks: true })
+      if (!updateRow) return this.ServerResponse.createByErrorMsg('订单发货失败')
+
+
+      const orderDetail = await this._createOrderDetail(updateRow.toJSON(), orderItem, updateRow.get('shippingId'))
+      return this.ServerResponse.createBySuccessMsgAndData('发货成功', orderDetail)
+    }
+
+    /**
+     * @feature 获取订单详情列表
+     * @param pageNum {number}
+     * @param pageSize {number}
+     * @returns {Promise.<array>}
+     */
     async getList({ pageNum = 1, pageSize = 10 }) {
-      const { id: userId } = this.session.currentUser
+      const { id: userId, role } = this.session.currentUser
+      // 循环查询解决
       const { count, rows } = await this.OrderModel.findAndCount({
-        where: { userId },
+        where: { userId: role === ROLE_ADMAIN ? { $regexp: '[0-9a-zA-Z]' } : userId },
         order: [[ 'id', 'DESC' ]],
         limit: Number(pageSize | 0),
         offset: Number(pageNum - 1 | 0) * Number(pageSize | 0),
@@ -205,24 +231,91 @@ module.exports = app => {
         return { ...item, orderItemList, shipping }
       }))
 
+      // 关联查询解决 bug
       // const orderListWithOrderItemsAndShipping = await this.OrderModel.findAll({
-      //     where: { userId },
+      //     where: { userId: role === ROLE_ADMAIN ? { $regexp: '[0-9a-zA-Z]' } : userId },
       //     order: [[ 'id', 'DESC' ]],
       //     limit: Number(pageSize | 0),
       //     offset: Number(pageNum - 1 | 0) * Number(pageSize | 0),
       //     include: [
       //       { model: this.OrderItemModel },
-      //       // { model: this.ShippingModel, where: { id: app.Sequelize.literal('order.shippingId = shipping.id') } }
+      //       { model: this.ShippingModel, where: { id: app.Sequelize.literal('order.shippingId = shipping.id') } }
       //     ],
       //   }).then(rows => rows && rows.map(r => r.toJSON()))
+      //
+      // const groupList = this._groupList(orderListWithOrderItemsAndShipping)
+      // const list = this._createOrderDetailList(groupList)
 
       return this.ServerResponse.createBySuccessData({
+        list: orderListWithOrderItemsAndShipping,
         pageNum,
         pageSize,
-        total: orderListWithOrderItemsAndShipping.length,
-        list: orderListWithOrderItemsAndShipping,
+        total: count,
         host: this.config.oss.client.endpoint,
       });
+    }
+
+    /**
+     * @feature 后台管理搜索, 现只支持订单号搜索
+     * @param orderNum {number}
+     * @param pageNum {number}
+     * @param pageSize {number}
+     * @returns {Promise.<array>}
+     */
+    async search({ orderNum, pageNum = 1, pageSize = 10 }) {
+      const { count, rows } = await this.OrderModel.findAndCount({
+        where: { orderNum },
+        order: [[ 'id', 'DESC' ]],
+        limit: Number(pageSize | 0),
+        offset: Number(pageNum - 1 | 0) * Number(pageSize | 0),
+      });
+      if (rows.length < 1) this.ServerResponse.createBySuccessMsg('已无订单搜索数据');
+      const orderList = rows.map(row => row && row.toJSON());
+
+      const orderListWithOrderItemsAndShipping = await Promise.all(orderList.map(async item => {
+        const orderItemList = await this.OrderItemModel.findAll({ where: { orderNum: item.orderNum }}).then(rows => rows && rows.map(r => r.toJSON()))
+        const shipping = await this.ShippingModel.findOne({ where: { id: item.shippingId }}).then(r => r && r.toJSON())
+
+        return { ...item, orderItemList, shipping }
+      }))
+
+      return this.ServerResponse.createBySuccessData({
+        list: orderListWithOrderItemsAndShipping,
+        pageNum,
+        pageSize,
+        total: count,
+        host: this.config.oss.client.endpoint,
+      });
+    }
+
+    // 对order 组装orderItem 数组
+    _groupList(arr) {
+      return arr.reduce((arr, item, index) => {
+        item.orderItemList = []
+        if (!arr[index - 1]) item.orderItemList.push(item.orderItem)
+        else {
+          if (arr[index - 1].orderItem.orderNum === item.orderItem.orderNum) {
+            arr[index - 1].orderItemList.push(item.orderItem)
+            _.unset(arr[index - 1], 'orderItem')
+            return arr
+          }
+        }
+        return [ ...arr, item ]
+      }, [])
+    }
+
+    /**
+     * @feature 补全订单列表详情数据， 关联查询已经携带orderLIst shipping
+     * @param list {array} 订单列表，包含orderItem shipping
+     * @returns {Array|*|{}}
+     * @private
+     */
+    _createOrderDetailList(list) {
+      return list.map(order => {
+        const paymentType = this._getEnumValueByCode(PAYMENT_TYPE_MAP, order.paymentType)
+        const orderStatus = this._getEnumValueByCode(ORDER_STATUS_MAP, order.status)
+        return { ...order, payment: Number(order.payment).toFixed(2), paymentType, orderStatus }
+      })
     }
 
     /**
@@ -234,7 +327,9 @@ module.exports = app => {
      * @private
      */
     async _createOrderDetail(order, orderItemList, shippingId) {
-      const shipping = await this.ShippingModel.findOne({ where: { id: shippingId }}).then(r => r && r.toJSON())
+      let shipping
+      if (shippingId) shipping = await this.ShippingModel.findOne({ where: { id: shippingId }}).then(r => r && r.toJSON())
+
       const paymentType = this._getEnumValueByCode(PAYMENT_TYPE_MAP, order.paymentType)
       const orderStatus = this._getEnumValueByCode(ORDER_STATUS_MAP, order.status)
 

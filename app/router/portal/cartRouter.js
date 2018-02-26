@@ -1,5 +1,5 @@
 module.exports = app => {
-  const checkLogin = app.middleware.checkLogin();
+  const checkLogin = app.middleware.checkLogin({});
   app.router.post('/cart/update', checkLogin, app.controller.portal.cartController.addOrUpdate);
 
   app.router.get('/cart/list', checkLogin, app.controller.portal.cartController.getCartList);

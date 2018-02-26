@@ -1,5 +1,5 @@
 module.exports = app => {
-  const checkLogin = app.middleware.checkLogin();
+  const checkLogin = app.middleware.checkLogin({});
   app.router.get('/shipping/list', checkLogin, app.controller.portal.shippingController.getAllShipping);
 
   app.router.post('/shipping/add', checkLogin, app.controller.portal.shippingController.add);
