@@ -13,17 +13,17 @@ module.exports = appInfo => {
     dialect: 'mysql', // support: mysql, mariadb, postgres, mssql
     database: 'egg-commerce',
     host: 'localhost',
-    port: '3306',
-    username: 'root',
-    password: '1234abcd',
+    port: '你的端口',
+    username: '你的用户',
+    password: '你的密码',
     timezone: '+08:00', // 东八时区
   };
 
   config.redis = {
     client: {
-      port: 6379, // Redis port
+      port: '你的端口', // Redis port
       host: '127.0.0.1', // Redis host
-      password: '',
+      password: '你的密码',
       db: 0,
     },
     agent: true,
@@ -44,8 +44,8 @@ module.exports = appInfo => {
 
   config.oss = {
     client: {
-      accessKeyId: 'LTAItynAEvcPJHkE',
-      accessKeySecret: '5cZb18s6ZeBxY6K9duVavWL6Aup7T5',
+      accessKeyId: '你的配置',
+      accessKeySecret: '你的配置',
       bucket: 'egg-commerce',
       endpoint: 'oss-cn-hangzhou.aliyuncs.com',
       timeout: '60s',
