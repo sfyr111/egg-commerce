@@ -7,6 +7,17 @@ const alipayf2fConfig = require('../common/alipayConfig');
 const alipayftof = require('alipay-ftof');
 const alipayf2f = new alipayftof(alipayf2fConfig);
 
+// 要求在env = test 环境下
+process.env.NODE_ENV = 'test'
+const Alipay = require('alipay-mobile');
+const options = {
+  app_id: alipayf2fConfig.appid.toString(),
+  appPrivKeyFile: alipayf2fConfig.merchantPrivateKey,
+  alipayPubKeyFile: alipayf2fConfig.alipayPublicKey,
+}
+const alipayService = new Alipay(options);
+
+
 const OrderStatus = require('../common/orderStatus');
 const PayPlatform = require('../common/payPlatform');
 const AlipayConst = require('../common/alipayConst');
@@ -61,6 +72,31 @@ module.exports = app => {
     }
 
     /**
+     * @feature 手机支付宝唤醒APP 支付
+     * @param orderNum {number}
+     * @returns {Promise.<*>}
+     */
+    async mobilePay(orderNum) {
+      // 要求在env = test 环境下
+      const { id: userId } = this.session.currentUser;
+      const order = await this.OrderModel.findOne({ where: { userId, orderNum } }).then(row => row && row.toJSON());
+      if (!order) this.ServerResponse.createByErrorMsg('用户没有该订单');
+      if (order.status >= OrderStatus.PAID.CODE) return this.ServerResponse.createByErrorMsg('该订单不可支付');
+
+      const data = {
+        subject: `COOLHEADEDYANG扫码支付,订单号: ${order.orderNum}`,
+        out_trade_no: order.orderNum.toString(),
+        total_amount: order.payment,
+        body: `订单${order.orderNum}购买商品共${order.payment}元`
+      };
+      const basicParams = { return_url: 'http://localhost:7071', notify_url: alipayf2fConfig.notifyUrl };
+      const result = await alipayService.createWebOrderURL(data, basicParams);
+      if (result.code !== 0) return this.ServerResponse.createByErrorMsg('创建支付订单错误')
+      console.log(result.data)
+      return this.ServerResponse.createBySuccessMsgAndData('支付宝手机支付地址创建成功', result)
+    }
+
+    /**
      * @feature 处理支付宝支付回调
      * @param body {Object} 支付宝支付回调的请求body
      * @return {Promise.<*>}
@@ -98,24 +134,6 @@ module.exports = app => {
       const key = Object.keys(OrderStatus).find(k => OrderStatus[k].CODE === order.status);
 
       return this.ServerResponse.createBySuccessMsgAndData('订单状态', OrderStatus[key]);
-    }
-
-    async alipayMobilePay(orderNum) {
-      const Alipay = require('alipay-mobile');
-      const options = {
-        app_id: alipayf2fConfig.appid.toString(),
-        appPrivKeyFile: alipayf2fConfig.merchantPrivateKey,
-        alipayPubKeyFile: alipayf2fConfig.alipayPublicKey,
-      };
-      const alipayService = new Alipay(options);
-      const data = {
-        subject: '辣条',
-        out_trade_no: orderNum,
-        total_amount: '100',
-      };
-      const basicParams = { return_url: 'http://9ebenn.natappfree.cc' };
-      const result = await alipayService.createWebOrder(data, basicParams);
-      console.log(result);
     }
 
     async createOrder(shippingId) {
@@ -198,7 +216,7 @@ module.exports = app => {
       if (orderItem.length < 1) return this.ServerResponse.createByErrorMsg('订单不存在2')
 
       if (orderRow.get('status') !== ORDER_STATUS_MAP.PAID.CODE) return this.ServerResponse.createByErrorMsg('此订单未完成交易, 不能发货')
-      const updateRow = await orderRow.update({ status: ORDER_STATUS_MAP.SHIPPED.CODE }, { individualHooks: true })
+      const updateRow = await orderRow.update({ status: ORDER_STATUS_MAP.SHIPPED.CODE, sendTime: new Date() }, { individualHooks: true })
       if (!updateRow) return this.ServerResponse.createByErrorMsg('订单发货失败')
 
 
@@ -230,7 +248,7 @@ module.exports = app => {
 
         return { ...item, orderItemList, shipping }
       }))
-
+      const list = this._createOrderDetailList(orderListWithOrderItemsAndShipping)
       // 关联查询解决 bug
       // const orderListWithOrderItemsAndShipping = await this.OrderModel.findAll({
       //     where: { userId: role === ROLE_ADMAIN ? { $regexp: '[0-9a-zA-Z]' } : userId },
@@ -247,7 +265,7 @@ module.exports = app => {
       // const list = this._createOrderDetailList(groupList)
 
       return this.ServerResponse.createBySuccessData({
-        list: orderListWithOrderItemsAndShipping,
+        list,
         pageNum,
         pageSize,
         total: count,
@@ -279,8 +297,10 @@ module.exports = app => {
         return { ...item, orderItemList, shipping }
       }))
 
+      const list = this._createOrderDetailList(orderListWithOrderItemsAndShipping)
+
       return this.ServerResponse.createBySuccessData({
-        list: orderListWithOrderItemsAndShipping,
+        list,
         pageNum,
         pageSize,
         total: count,
