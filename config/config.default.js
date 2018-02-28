@@ -11,7 +11,7 @@ module.exports = appInfo => {
 
   config.sequelize = {
     dialect: 'mysql', // support: mysql, mariadb, postgres, mssql
-    database: 'egg-commerce',
+    database: 'egg_commerce',
     host: 'localhost',
     port: '3306',
     username: 'root',
