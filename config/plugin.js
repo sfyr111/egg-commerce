@@ -22,3 +22,8 @@ exports.oss = {
   enable: true,
   package: 'egg-oss',
 };
+
+exports.alinode = {
+  enable: true,
+  package: 'egg-alinode',
+};

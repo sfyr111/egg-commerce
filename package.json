@@ -7,6 +7,7 @@
     "alipay-ftof": "^0.1.5",
     "alipay-mobile": "^2.2.1",
     "egg": "^2.2.1",
+    "egg-alinode": "^2.0.1",
     "egg-multipart": "^2.0.0",
     "egg-oss": "^1.1.0",
     "egg-redis": "^1.0.2",
@@ -38,7 +39,7 @@
     "node": ">=8.9.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon --title=egg-server-egg-commerce -p 3000",
+    "start": "ENABLE_NODE_LOG=YES egg-scripts start --daemon --title=egg-server-egg-commerce -p 3000",
     "stop": "egg-scripts stop --title=egg-server-egg-commerce",
     "dev": "egg-bin dev --port 7001",
     "debug": "egg-bin debug",
