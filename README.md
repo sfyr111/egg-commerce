@@ -1,5 +1,10 @@
 # egg-commerce
 
+线上测试地址
+```
+13.229.236.130:3000
+```
+
 egg / mysql 开发电商平台
 集成支付宝面对面支付、手机网站唤醒APP支付
 
@@ -7,6 +12,11 @@ egg / mysql 开发电商平台
 node / mysql / egg / sequelizejs / redis / 支付宝支付  
 
 ### 本地开发
+
+1.找到config/config.default.js 和config/plugin.js 
+确保alinode 配置和插件已经注释
+
+2.然后找到在config/config.default.js 配置你的数据库环境
 
 ```bash
 $ npm i
