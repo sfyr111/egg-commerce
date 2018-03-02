@@ -7,6 +7,7 @@ module.exports = app => {
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
+      defaultValue: 10000,
     },
     // 父类别id 为0时为根节点，一级类别
     parentId: {

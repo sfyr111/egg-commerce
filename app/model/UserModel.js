@@ -9,6 +9,7 @@ module.exports = app => {
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
+      defaultValue: 10000,
     },
     username: {
       type: STRING(50),
