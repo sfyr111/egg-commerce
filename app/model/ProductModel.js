@@ -1,15 +1,15 @@
 const { ON_SALE } = require('../common/product');
 
 module.exports = app => {
-  const { INTEGER, STRING, DATE, TEXT, DECIMAL } = app.Sequelize;
+  const { INTEGER, STRING, DATE, TEXT, DECIMAL, UUID, UUIDV4 } = app.Sequelize;
 
   const ProductModel = app.model.define('product', {
     id: {
-      type: INTEGER(11),
+      type: UUID,
+      defaultValue: UUIDV4,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
-      defaultValue: 10000,
+      // autoIncrement: true,
     },
     // 分类id
     categoryId: {

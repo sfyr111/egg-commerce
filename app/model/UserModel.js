@@ -1,15 +1,15 @@
 const { ROLE_CUSTOMER } = require('../common/role');
 
 module.exports = app => {
-  const { INTEGER, STRING, DATE } = app.Sequelize;
+  const { INTEGER, STRING, DATE, UUID, UUIDV4 } = app.Sequelize;
 
   const UserModel = app.model.define('user', {
     id: {
-      type: INTEGER(11),
+      type: UUID,
+      defaultValue: UUIDV4,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
-      defaultValue: 10000,
+      // autoIncrement: true,
     },
     username: {
       type: STRING(50),

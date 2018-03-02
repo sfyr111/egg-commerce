@@ -1,13 +1,13 @@
 module.exports = app => {
-  const { INTEGER, DATE, BIGINT, DECIMAL, STRING } = app.Sequelize;
+  const { INTEGER, DATE, BIGINT, DECIMAL, STRING, UUID, UUIDV4 } = app.Sequelize;
 
   const OrderItemModel = app.model.define('orderItem', {
     id: {
-      type: INTEGER(11),
+      type: UUID,
+      defaultValue: UUIDV4,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
-      defaultValue: 10000,
+      // autoIncrement: true,
     },
     // 用户id
     userId: {

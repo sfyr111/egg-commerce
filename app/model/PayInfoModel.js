@@ -1,13 +1,13 @@
 module.exports = app => {
-  const { INTEGER, DATE, STRING, BIGINT } = app.Sequelize;
+  const { INTEGER, DATE, STRING, BIGINT, UUID, UUIDV4 } = app.Sequelize;
 
   const PayInfoModel = app.model.define('payInfo', {
     id: {
-      type: INTEGER(11),
+      type: UUID,
+      defaultValue: UUIDV4,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
-      defaultValue: 10000,
+      // autoIncrement: true,
     },
     // 用户id
     userId: {

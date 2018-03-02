@@ -2,15 +2,15 @@ const { NO_PAY } = require('../common/orderStatus')
 const { ONLINE_PAY } = require('../common/paymentType')
 
 module.exports = app => {
-  const { INTEGER, DATE, BIGINT, DECIMAL } = app.Sequelize;
+  const { INTEGER, DATE, BIGINT, DECIMAL, UUID, UUIDV4 } = app.Sequelize;
 
   const OrderModel = app.model.define('order', {
     id: {
-      type: INTEGER(11),
+      type: UUID,
+      defaultValue: UUIDV4,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
-      defaultValue: 10000,
+      // autoIncrement: true,
     },
     // 用户id
     userId: {

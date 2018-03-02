@@ -1,13 +1,13 @@
 module.exports = app => {
-  const { INTEGER, STRING, DATE } = app.Sequelize;
+  const { INTEGER, STRING, DATE, UUID, UUIDV4 } = app.Sequelize;
 
   const CategoryModel = app.model.define('category', {
     id: {
-      type: INTEGER(11),
+      type: UUID,
+      defaultValue: UUIDV4,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
-      defaultValue: 10000,
+      // autoIncrement: true,
     },
     // 父类别id 为0时为根节点，一级类别
     parentId: {

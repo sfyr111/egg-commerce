@@ -1,15 +1,15 @@
 const { UN_CHECKED } = require('../common/cart');
 
 module.exports = app => {
-  const { INTEGER, DATE } = app.Sequelize;
+  const { INTEGER, DATE, UUID, UUIDV4 } = app.Sequelize;
 
   const CartModel = app.model.define('cart', {
     id: {
-      type: INTEGER(11),
+      type: UUID,
+      defaultValue: UUIDV4,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
-      defaultValue: 10000,
+      // autoIncrement: true,
     },
     // 用户id
     userId: {
