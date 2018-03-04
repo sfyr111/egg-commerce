@@ -14,7 +14,7 @@ module.exports = app => {
     },
     // 用户id
     userId: {
-      type: INTEGER(11),
+      type: UUID,
       allowNull: false,
     },
     // 订单号
@@ -23,7 +23,7 @@ module.exports = app => {
       allowNull: false,
     },
     shippingId: {
-      type: INTEGER(11),
+      type: UUID,
       allowNull: true,
     },
     // 实际付款金额，单位元，保留2位小数

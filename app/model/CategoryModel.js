@@ -11,7 +11,7 @@ module.exports = app => {
     },
     // 父类别id 为0时为根节点，一级类别
     parentId: {
-      type: INTEGER(11),
+      type: UUID,
       allowNull: true,
     },
     // 类别名称

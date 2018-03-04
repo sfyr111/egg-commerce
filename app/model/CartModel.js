@@ -13,12 +13,12 @@ module.exports = app => {
     },
     // 用户id
     userId: {
-      type: INTEGER(11),
+      type: UUID,
       allowNull: false,
     },
     // 产品id
     productId: {
-      type: INTEGER(11),
+      type: UUID,
       allowNull: true,
     },
     // 数量

@@ -13,7 +13,7 @@ module.exports = app => {
     },
     // 分类id
     categoryId: {
-      type: INTEGER(11),
+      type: UUID,
       allowNull: false,
     },
     // 商品名称
