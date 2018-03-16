@@ -39,8 +39,8 @@ class UserController extends Controller {
   // 校验
   async checkValid() {
     const { value, type } = this.ctx.params;
-    const respponse = await this.UserService.checkValid(type, value);
-    this.ctx.body = respponse;
+    const response = await this.UserService.checkValid(type, value);
+    this.ctx.body = response;
   }
 
   // 获取用户信息
